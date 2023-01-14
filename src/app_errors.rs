@@ -5,5 +5,6 @@ error_chain! {
         Io(std::io::Error);
         HttpRequest(reqwest::Error);
         Zip(zip::result::ZipError);
+        Json(serde_json::Error);
      }
 }

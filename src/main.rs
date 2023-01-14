@@ -1,6 +1,5 @@
 use bic_creator::{convert, download_zip, unzip};
 use bic_creator::app_errors::*;
-use bic_creator::json_creator::gen_json;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -8,7 +7,7 @@ async fn main() -> Result<()> {
     // println!("Zip downloaded: {}", zip_file);
     // let unzipped = unzip(zip_file)?;
     // println!("Unzipped: {}", unzipped);
-    // convert(unzipped)?;
-    gen_json();
+    let unzipped = "20230113_ED807_full.xml".to_string();
+    convert(unzipped)?;
     Ok(())
 }

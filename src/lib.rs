@@ -1,11 +1,14 @@
 pub mod app_errors;
 pub mod json_creator;
+pub mod regions;
 
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::{copy, Cursor, Read};
 use chrono::{Datelike, Duration, Utc, Weekday};
 use xmltojson::to_json;
 pub use app_errors::*;
+use crate::json_creator::{Bic, Data};
+use crate::regions::Region;
 
 pub async fn download_zip() -> Result<String> {
     let mut date = Utc::now();
@@ -57,7 +60,7 @@ pub fn unzip(file_name: String) -> Result<String> {
 
 pub fn convert(file_name: String) -> Result<()> {
     let output_path = "data.json";
-    let file = File::open(file_name).expect("File not found");
+    let file = File::open(file_name)?;
     let mut rdr = encoding_rs_io::DecodeReaderBytesBuilder::new()
         .encoding(Some(encoding_rs::WINDOWS_1251))
         .build(file);
@@ -66,11 +69,24 @@ pub fn convert(file_name: String) -> Result<()> {
     rdr.read_to_string(&mut content).unwrap();
     let json = to_json(&content).expect("Failed to convert to json");
 
-    // Save the JSON structure into the other file.
-    std::fs::write(
-        output_path,
-        serde_json::to_string_pretty(&json).unwrap(),
-    )
-        .expect("failed to write result file");
+
+    let bics = json
+        .pointer("/ED807/BICDirectoryEntry")
+        .ok_or("Failed to get BICDirectoryEntry")?
+        .clone();
+
+
+    let mut data = Data::new();
+    let regions = Region::new();
+
+    for bic in bics.as_array().ok_or("Failed to get bic")? {
+        let json = bic.clone();
+        let mut item: Bic = serde_json::from_value(json)?;
+        item.fix_fields(&regions);
+        data.add(item);
+    }
+
+    // Save the JSON structure into the output file.
+    fs::write(output_path, serde_json::to_string_pretty(&data)?)?;
     Ok(())
 }
