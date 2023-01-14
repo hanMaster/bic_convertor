@@ -1,5 +1,5 @@
-use serde::{Deserialize, Deserializer, Serialize};
 use crate::regions::Region;
+use serde::{Deserialize, Deserializer, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Bic {
@@ -10,7 +10,7 @@ pub struct Bic {
     #[serde(skip_serializing_if = "Option::is_none")]
     swifts: Option<Vec<Swift>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    accounts: Option<Vec<Account>>
+    accounts: Option<Vec<Account>>,
 }
 
 impl Bic {
@@ -91,20 +91,20 @@ struct ParticipantInfo {
     #[serde(rename(deserialize = "@Adr"))]
     address: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    phones: Option<String>
+    phones: Option<String>,
 }
 
 fn replace_quotes<'de, D>(deserializer: D) -> Result<String, D::Error>
-    where
-        D: Deserializer<'de>,
+where
+    D: Deserializer<'de>,
 {
     let s = String::deserialize(deserializer)?;
     Ok(s.replace("&quot;", "\""))
 }
 
 fn replace_status<'de, D>(deserializer: D) -> Result<String, D::Error>
-    where
-        D: Deserializer<'de>,
+where
+    D: Deserializer<'de>,
 {
     let s = String::deserialize(deserializer)?;
     Ok(s.replace("PSAC", "ACTIVE"))
@@ -114,7 +114,7 @@ fn replace_status<'de, D>(deserializer: D) -> Result<String, D::Error>
 struct Swift {
     swift: String,
     #[serde(rename(serialize = "usedByDefault"))]
-    used_by_default: bool
+    used_by_default: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -126,22 +126,26 @@ struct Account {
     open_date: String,
     status: String,
     #[serde(rename(serialize = "controlKey"))]
-    control_key: String
+    control_key: String,
 }
 
 #[derive(Serialize)]
 pub struct Data {
-    bics: Vec<Bic>
+    bics: Vec<Bic>,
 }
 
 impl Data {
     pub fn new() -> Self {
-        Self {
-            bics: vec![]
-        }
+        Self { bics: vec![] }
     }
 
     pub fn add(&mut self, row: Bic) {
         self.bics.push(row);
+    }
+}
+
+impl Default for Data {
+    fn default() -> Self {
+        Self::new()
     }
 }

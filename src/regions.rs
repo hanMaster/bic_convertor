@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 pub struct Region {
-    regions: HashMap<String, String>
+    regions: HashMap<String, String>,
 }
 
 impl Region {
@@ -13,15 +13,24 @@ impl Region {
         regions.insert("84".to_string(), "Республика Алтай".to_string()); // +
         regions.insert("82".to_string(), "Республика Дагестан".to_string()); //+
         regions.insert("26".to_string(), "Республика Ингушетия".to_string()); //+
-        regions.insert("83".to_string(), "Кабардино-Балкарская Республика".to_string()); //+
+        regions.insert(
+            "83".to_string(),
+            "Кабардино-Балкарская Республика".to_string(),
+        ); //+
         regions.insert("85".to_string(), "Республика Калмыкия".to_string()); //+
-        regions.insert("91".to_string(), "Карачаево-Черкесская Республика".to_string()); //+
+        regions.insert(
+            "91".to_string(),
+            "Карачаево-Черкесская Республика".to_string(),
+        ); //+
         regions.insert("86".to_string(), "Республика Карелия".to_string()); //+
         regions.insert("87".to_string(), "Республика Коми".to_string()); //+
         regions.insert("88".to_string(), "Республика Марий Эл".to_string()); //+
         regions.insert("89".to_string(), "Республика Мордовия".to_string()); //+
         regions.insert("98".to_string(), "Республика Саха (Якутия)".to_string()); //+
-        regions.insert("90".to_string(), "Республика Северная Осетия - Алания".to_string()); //+
+        regions.insert(
+            "90".to_string(),
+            "Республика Северная Осетия - Алания".to_string(),
+        ); //+
         regions.insert("92".to_string(), "Республика Татарстан".to_string()); //+
         regions.insert("93".to_string(), "Республика Тыва".to_string()); //+
         regions.insert("94".to_string(), "Удмуртская Республика".to_string()); //+
@@ -90,18 +99,34 @@ impl Region {
         regions.insert("35".to_string(), "Республика Крым".to_string()); //+
         regions.insert("111".to_string(), "Ненецкий автономный округ".to_string()); //+
         regions.insert("118".to_string(), "Ненецкий автономный округ".to_string()); //+
-        regions.insert("71100".to_string(), "Ханты-Мансийский автономный округ — Югра".to_string()); //+
-        regions.insert("718".to_string(), "Ханты-Мансийский автономный округ — Югра".to_string()); //+
+        regions.insert(
+            "71100".to_string(),
+            "Ханты-Мансийский автономный округ — Югра".to_string(),
+        ); //+
+        regions.insert(
+            "718".to_string(),
+            "Ханты-Мансийский автономный округ — Югра".to_string(),
+        ); //+
         regions.insert("77".to_string(), "Чукотский автономный округ".to_string()); //+
-        regions.insert("719".to_string(), "Ямало-Ненецкий автономный округ".to_string()); //+
-        regions.insert("71140".to_string(), "Ямало-Ненецкий автономный округ".to_string()); //+
+        regions.insert(
+            "719".to_string(),
+            "Ямало-Ненецкий автономный округ".to_string(),
+        ); //+
+        regions.insert(
+            "71140".to_string(),
+            "Ямало-Ненецкий автономный округ".to_string(),
+        ); //+
 
-        Self {
-            regions
-        }
+        Self { regions }
     }
 
     pub fn get_by_code(&self, code: &str) -> Result<&String, &'static str> {
         self.regions.get(code).ok_or("region not found")
+    }
+}
+
+impl Default for Region {
+    fn default() -> Self {
+        Self::new()
     }
 }

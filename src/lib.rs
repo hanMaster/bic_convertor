@@ -2,13 +2,13 @@ pub mod app_errors;
 pub mod json_creator;
 pub mod regions;
 
-use std::fs::{self, File};
-use std::io::{copy, Cursor, Read};
-use chrono::{Datelike, Duration, Utc, Weekday};
-use xmltojson::to_json;
-pub use app_errors::*;
 use crate::json_creator::{Bic, Data};
 use crate::regions::Region;
+pub use app_errors::*;
+use chrono::{Datelike, Duration, Utc, Weekday};
+use std::fs::{self, File};
+use std::io::{copy, Cursor, Read};
+use xmltojson::to_json;
 
 pub async fn download_zip() -> Result<String> {
     let mut date = Utc::now();
@@ -26,10 +26,7 @@ pub async fn download_zip() -> Result<String> {
         date.month(),
         date.day()
     );
-    let target = format!(
-        "https://www.cbr.ru/vfs/mcirabis/BIKNew/{}",
-        file_name
-    );
+    let target = format!("https://www.cbr.ru/vfs/mcirabis/BIKNew/{}", file_name);
 
     println!("Downloading file from: {}", target);
 
@@ -47,12 +44,17 @@ pub async fn download_zip() -> Result<String> {
 }
 
 pub fn unzip(file_name: String) -> Result<String> {
-    let file = File::open(&file_name)?;
+    let file = File::open(file_name)?;
     let mut archive = zip::ZipArchive::new(file)?;
     let mut file = archive.by_index(0)?;
 
-    let out_path = file.enclosed_name().ok_or("Failed to get zipped file name")?;
-    let filename = out_path.to_str().ok_or("Failed to get zipped file name")?.to_string();
+    let out_path = file
+        .enclosed_name()
+        .ok_or("Failed to get zipped file name")?;
+    let filename = out_path
+        .to_str()
+        .ok_or("Failed to get zipped file name")?
+        .to_string();
     let mut outfile = File::create(out_path)?;
     copy(&mut file, &mut outfile)?;
     Ok(filename)
@@ -69,12 +71,10 @@ pub fn convert(file_name: String) -> Result<()> {
     rdr.read_to_string(&mut content).unwrap();
     let json = to_json(&content).expect("Failed to convert to json");
 
-
     let bics = json
         .pointer("/ED807/BICDirectoryEntry")
         .ok_or("Failed to get BICDirectoryEntry")?
         .clone();
-
 
     let mut data = Data::new();
     let regions = Region::new();
